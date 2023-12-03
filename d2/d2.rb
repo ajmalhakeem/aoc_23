@@ -1,23 +1,35 @@
-red = 12 
-green = 13
-blue = 14
+red_max = 12 
+green_max = 13
+blue_max = 14
 
-file = File.open('sample_d2.txt')
+
+file = File.open('d2.txt')
 
 games = file.readlines.map(&:chomp)
+playable_games = []
 
-games_hash = {}
 games.each do |game| 
-    game_id, details = game.split(":", 2)
-    game_id = game_id.split(' ')[1].to_i
-    games_hash[game_id] = details
+  game_number, sets = game.split(':', 2)
+  game_id = game_number.split(' ')[1].to_i
+
+  game_playable = true
+
+  sets.split(';') do |set|
+    red_count = set.scan(/\d+ red/).first.to_i
+    green_count = set.scan(/\d+ green/).first.to_i
+    blue_count = set.scan(/\d+ blue/).first.to_i
+
+    if red_count > red_max || green_count > green_max || blue_count > blue_max
+      game_playable = false
+      break
+    end  
+  end
+
+  if game_playable
+    playable_games << game_id
+  end
 end
 
-p games_hash
+puts playable_games.sum
 
-#{
-#    1: [[3,0,3], [1,2,6], [0,0,2]],
- #   2: [[0,2,1],[1,3,4],[0,1,1]],
-  #  ...etc
-#}
 
